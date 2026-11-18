@@ -35,3 +35,19 @@ pointer and verified the P3HT transistor example against the source paper
 by Sirringhaus et al. The group should confirm the relevant QXU6028
 lecture slide and the device covered there. Group members will complete
 their personal details, evidence and signatures themselves.
+
+## Revision after receiving the course report guidance
+
+Codex checked slides 6–10 and 14 against the report. It added the L1
+band-edge and Fermi-referenced density sweeps and the separate L2 channel
+overlays to the reproducible figures. It revised Transfer to use the
+Chapter 3 mobility derivation identified on slide 10 and verified the
+inkjet-printed P3HT device against Park and Wong (2022,
+doi: 10.1021/acsaelm.1c00985). This resolved the lecture-reference note in
+the earlier draft. Codex also checked the rendered report and independently
+recomputed the marked results.
+
+The revised report is reproduced from tag `g20-coursework-v2`. The previous
+report and the phase and blind-run records remain traceable in Git.
+The archived blind run was performed locally with the original frozen
+code, and no QMplus receipt was supplied.
