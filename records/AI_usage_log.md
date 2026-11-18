@@ -18,3 +18,20 @@ The regular analysis was reviewed and committed before the blind numerical
 run. Both runs used tag `g20-pipeline` and commit
 `686d0010d58429684a9d37c9b245994d816bcdf4`. The two terminal logs record
 the environment and results. See the error ledger for corrections.
+
+## Final coursework preparation
+
+The requester supplied the full assessment brief after the checkpoint
+packages were completed. Codex compared Sections 5 and 7 with the existing
+deliverables, added the L3 spectral diagnostic and supplementary report
+metrics, reran the regular inputs from a clean Git checkout, and drafted
+the short report, critical self-assessment and blank contribution form.
+Codex also checked the rendered Word pages and prepared the local Git
+bundle. The final analytical commit is the `g20-coursework` tag. The previous
+`g20-pipeline` tag still identifies the checkpoint and blind-run evidence.
+
+For the Transfer section, Codex checked the methods guide's Chapter 5
+pointer and verified the P3HT transistor example against the source paper
+by Sirringhaus et al. The group should confirm the relevant QXU6028
+lecture slide and the device covered there. Group members will complete
+their personal details, evidence and signatures themselves.

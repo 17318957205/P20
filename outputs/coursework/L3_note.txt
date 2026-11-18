@@ -1,0 +1,7 @@
+G20 L3 - Conductivity non-uniformity
+
+The three scans give an RMS channel standard deviation of 1.6436e-07. The map uses the guide's reference η₀ = 0.00133099. The method figure shows how changing η changes the residual and roughness. The strongest reconstructed positive and negative features are +3.11% at (-2.7, -2.7) and -3.17% at (+2.7, +2.7), with coordinates in probe pitches.
+
+The positive-lobe moment gives FWHM estimates of 1.444 and 1.303 pitches for the central and off-centre impulses, respectively. The conservative resolution is 1.444 pitches. The two extrema are 7.64 pitches apart, which puts their separation above this resolution estimate. The 95th percentile of the largest absolute noise-map values is 0.000262% (500 simulations, seed 6029).
+
+The largest absolute deviation is 3.171% against the 3.000% specification. The nominal decision is fail. The noise-adjusted bounds are 3.170724% and 3.171248%. The confidence classification is clear fail.

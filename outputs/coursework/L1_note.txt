@@ -1,0 +1,5 @@
+G20 L1 - Carrier-count correction
+
+At the operating point of 0.157724214 eV, the band-edge count is 2.252325e+12 cm⁻² and the Fermi-referenced count is 5.617327e+11 cm⁻². The correction factor is 4.0096. Applying it raises the mobility from 5854.2 to 23473.2 cm² V⁻¹ s⁻¹. As doping increases, the band-edge count includes more occupied states below the Fermi level. The Fermi-referenced count mainly samples the thermal tail above it, so the ratio grows.
+
+C = 2 and C = 4 occur at 0.07276 eV and 0.15735 eV. The 300 K checks give 0 eV → 1.0000, 0.073 eV → 2.0049, 0.1 eV → 2.5988, 0.2 eV → 5.1044. The maximum relative difference between the supplied and recalculated band-edge counts is 1.97e-12.
