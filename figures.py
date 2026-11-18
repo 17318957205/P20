@@ -158,11 +158,14 @@ def l3_spectrum_figure(group, result, output):
         1, 2, figsize=(8.8, 3.35), layout="constrained", gridspec_kw={"width_ratios": (2.2, 1)},
     )
     indices = np.arange(1, len(values) + 1)
-    ax.semilogy(indices[:-1], values[:-1], "o-", color=BLUE, lw=1.1, ms=2.2)
-    ax.set(title="Nonconstant modes", xlabel="Singular-value index", ylabel=r"$\sigma_i/\sigma_1$")
-    detail.semilogy(indices[-6:], values[-6:], "o-", color=BLUE, lw=1.1, ms=3)
-    detail.scatter(indices[-1], values[-1], marker="s", color=ORANGE, zorder=3, label="Null mode")
-    detail.set(title="Last six modes", xlabel="Singular-value index", xticks=(95, 97, 100))
+    rank = result["numerical_rank"]
+    ax.semilogy(indices[:rank], values[:rank], "o-", color=BLUE, lw=1.1, ms=2.2)
+    ax.set(title="Numerically resolved modes", xlabel="Singular-value index", ylabel=r"$\sigma_i/\sigma_1$")
+    start = max(0, rank - 4)
+    detail.semilogy(indices[start:], values[start:], "o-", color=BLUE, lw=1.1, ms=3)
+    detail.axvspan(rank + 0.5, indices[-1] + 0.3, color=ORANGE, alpha=0.15, label="Numerically null")
+    detail.set(title="Tail of the spectrum", xlabel="Singular-value index",
+               xticks=(indices[start], rank, indices[-1]))
     detail.legend(loc="center left", fontsize=8)
     fig.suptitle(f"{group} L3 | Forward matrix singular values", fontsize=12)
     save(fig, output, "L3_singular_values.png")
