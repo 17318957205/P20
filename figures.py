@@ -35,8 +35,16 @@ def save(fig, output, filename):
 
 
 def l1_figure(group, result, output):
-    fig, ax = plt.subplots(figsize=(7.8, 4.65), layout="constrained")
-    ax.plot(result["ef"], result["ratios"], "o-", color=BLUE, ms=4, label="Supplied sweep")
+    fig, (counts, ax) = plt.subplots(1, 2, figsize=(11.4, 4.6), layout="constrained", sharex=True)
+    sweep = result["ef"]
+    counts.plot(sweep, result["n_band_sweep_cm2"] / 1e12, "o-", color=BLUE, ms=3.6, label="Band-edge count")
+    counts.plot(sweep, result["n_fermi_sweep_cm2"] / 1e12, "s-", color=GREEN, ms=3.4, label="Fermi-referenced count")
+    counts.axvline(result["ef_op"], color=ORANGE, linewidth=0.9, linestyle=":")
+    counts.set(title="Sheet carrier density", xlabel=r"Fermi level $E_F$ (eV)",
+               ylabel=r"Sheet density ($10^{12}$ cm$^{-2}$)")
+    counts.legend(loc="upper left")
+
+    ax.plot(sweep, result["ratios"], "o-", color=BLUE, ms=3.6, label="Sweep ratio")
     for level, energy in result["crossings"].items():
         ax.axhline(level, color="#757575", linewidth=0.8, linestyle="--", zorder=1)
         ax.scatter(energy, level, marker="s", s=28, color=GREEN, zorder=3)
@@ -45,10 +53,11 @@ def l1_figure(group, result, output):
     ef, ratio = result["ef_op"], result["results"]["correction_factor"]
     ax.scatter(ef, ratio, facecolor="none", edgecolor=ORANGE, marker="o", s=145,
                linewidth=1.5, zorder=4,
-               label=f"Exact operating point ({ef:.4f} eV, {ratio:.3f})")
+               label="Exact operating point")
     ax.set(xlabel=r"Fermi level $E_F$ (eV)", ylabel=r"Correction factor $C=n_{\mathrm{band}}/n_F$",
-           title=f"{group} L1 | Carrier-count correction")
+           title="Carrier-count correction")
     ax.legend(loc="upper left")
+    fig.suptitle(f"{group} L1 | Band-edge and Fermi-referenced carrier counts", fontsize=12)
     save(fig, output, "L1_correction.png")
 
 
@@ -88,16 +97,30 @@ def l2_figures(group, result, output):
     fig.suptitle(f"{group} L2 | Density-of-states fit and transport measurements", fontsize=13)
     save(fig, output, "L2_model.png")
 
-    fig, ax = plt.subplots(figsize=(8.8, 4.7), layout="constrained")
+    fig = plt.figure(figsize=(11.4, 4.12), layout="constrained")
+    grid = fig.add_gridspec(2, 2, width_ratios=(1, 1.05))
+    hall_fit = fig.add_subplot(grid[0, 0])
+    sheet_fit = fig.add_subplot(grid[1, 0], sharex=hall_fit)
+    ax = fig.add_subplot(grid[:, 1])
+    assigned = result["results"]["EF_trajectory_eV"]
+    for channel, fit, label in ((0, hall_fit, r"$R_H/\max |R_H|$"), (1, sheet_fit, r"$R_s/\max R_s$")):
+        fit.plot(result["model_ef"], curve[:, channel], color=ORANGE, lw=1.3, label=name)
+        fit.scatter(assigned, pairs[:, channel], color=BLUE, s=12, alpha=0.78, label="Repeat means")
+        fit.set_ylabel(label)
+    hall_fit.axhline(0, color="#777777", linewidth=0.7, linestyle="--")
+    hall_fit.set_title("Separate channel overlays")
+    hall_fit.tick_params(labelbottom=False)
+    hall_fit.legend(ncol=2, loc="upper right", fontsize=8)
+    sheet_fit.set_xlabel(r"Fermi level $E_F$ (eV)")
     lower, upper = result["ef_interval"]
     ax.fill_between(indices, lower, upper, color=BLUE, alpha=0.23, label="16th–84th bootstrap percentiles")
-    ax.plot(indices, result["results"]["EF_trajectory_eV"], "o-", color=BLUE, ms=2.8,
-            lw=1.25, label="Fit to repeat means")
+    ax.plot(indices, assigned, "o-", color=BLUE, ms=2.8, lw=1.25, label="Fit to repeat means")
     for a, b in result["mean_brackets"]:
         ax.axvspan(indices[a], indices[b], color="#413281", alpha=0.10)
     ax.axhline(0, color="#777777", lw=0.8, linestyle="--")
-    ax.set(title=f"{group} L2 | Fermi-level trajectory", xlabel="Measurement index", ylabel=r"$E_F$ (eV)")
-    ax.legend()
+    ax.set(title="Fermi-level trajectory", xlabel="Measurement index", ylabel=r"$E_F$ (eV)")
+    ax.legend(loc="upper left", fontsize=8)
+    fig.suptitle(f"{group} L2 | Model channels and assigned Fermi levels", fontsize=12)
     save(fig, output, "L2_trajectory.png")
 
 

@@ -90,8 +90,11 @@ def write_coursework_metrics(output, l1, l2, l3):
     trajectory = l2["results"]["EF_trajectory_eV"]
     metrics = {
         "L1": {
-            **{key: l1[key] for key in ("ef_op", "temperature", "rho_ohm_sq", "n_band_op", "mobility_band",
+            **{key: l1[key] for key in ("ef_op", "temperature", "dos_scale_c", "rho_ohm_sq", "n_band_op", "mobility_band",
                                        "closed_form_relative_difference", "checks", "crossings", "band_max_rel_diff")},
+            "sweep_ef_eV": l1["ef"].tolist(),
+            "sweep_band_density_cm2": l1["n_band_sweep_cm2"].tolist(),
+            "sweep_fermi_density_cm2": l1["n_fermi_sweep_cm2"].tolist(),
             "sensitivity_band_V_per_A_per_T": l1["mobility_band"] * mobility_to_sensitivity,
             "sensitivity_fermi_V_per_A_per_T": l1["results"]["mobility_corrected_cm2_Vs"] * mobility_to_sensitivity,
         },
