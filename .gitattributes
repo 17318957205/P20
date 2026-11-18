@@ -1,0 +1,2 @@
+# Preserve the supplied bytes and manifest hashes on every platform.
+data/** -text

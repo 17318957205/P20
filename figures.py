@@ -43,7 +43,8 @@ def l1_figure(group, result, output):
         ax.annotate(f"C = {level} at {energy:.4f} eV", (energy, level), xytext=(7, -16),
                     textcoords="offset points", color="#205c50")
     ef, ratio = result["ef_op"], result["results"]["correction_factor"]
-    ax.scatter(ef, ratio, color=ORANGE, marker="D", s=55, zorder=4,
+    ax.scatter(ef, ratio, facecolor="none", edgecolor=ORANGE, marker="o", s=145,
+               linewidth=1.5, zorder=4,
                label=f"Exact operating point ({ef:.4f} eV, {ratio:.3f})")
     ax.set(xlabel=r"Fermi level $E_F$ (eV)", ylabel=r"Correction factor $C=n_{\mathrm{band}}/n_F$",
            title=f"{group} L1 | Carrier-count correction")
@@ -171,7 +172,8 @@ def write_notes(group, l1, l2, l3, output):
         f"{b['Eg_kT']:g} kBT ({b['Eg_kT'] * kt:.5f} eV). The gap reduces the carrier population near "
         "neutrality in the fitted model and raises its sheet resistance there."
         if b["model"] == "hard_gap" else
-        "The gapless cone is selected by the residual and gap-size rules, so the reported gap is zero. "
+        "The cone is selected because a hard gap must both reduce the residual by more than 15% "
+        "and be at least 1 kBT. The reported gap is zero. "
         "At this temperature the fitted cone can explain the transport through neutrality."
     )
     brackets = ", ".join(f"{l2['indices'][left]} to {l2['indices'][right]}"
@@ -196,6 +198,11 @@ def write_notes(group, l1, l2, l3, output):
         for feature in c["features"]
     )
     amplitude, detection, threshold = l3["amplitude"], c["detection_limit_fraction"], l3["threshold"]
+    positive, negative = c["features"]
+    separation = np.hypot(
+        positive["x_probe_pitch"] - negative["x_probe_pitch"],
+        positive["y_probe_pitch"] - negative["y_probe_pitch"],
+    )
     (output / "L3_note.txt").write_text(
         f"{group} L3 - Conductivity non-uniformity\n\n"
         f"The three scans give an RMS channel standard deviation of {l3['noise_sd_rms']:.4e}. "
@@ -204,12 +211,15 @@ def write_notes(group, l1, l2, l3, output):
         f"positive and negative features are {peaks}, with coordinates in probe pitches.\n\n"
         f"The positive-lobe moment gives FWHM estimates of {l3['spread'][0][2]:.3f} and "
         f"{l3['spread'][1][2]:.3f} pitches for the central and off-centre impulses, respectively. "
-        f"The conservative resolution is {c['resolution_probe_pitch']:.3f} pitches. The 95th "
-        f"percentile of the largest absolute noise-map values is {detection:.3%} "
+        f"The conservative resolution is {c['resolution_probe_pitch']:.3f} pitches. "
+        f"The two extrema are {separation:.2f} pitches apart, "
+        "which puts their separation above this resolution estimate. The 95th "
+        f"percentile of the largest absolute noise-map values is {detection:.6%} "
         f"({NOISE_COUNT} simulations, seed {NOISE_SEED}).\n\n"
         f"The largest absolute deviation is {amplitude:.3%} against the {threshold:.3%} specification. "
         f"The nominal decision is {'pass' if c['pass'] else 'fail'}. The noise-adjusted bounds are "
-        f"{amplitude - detection:.3%} and {amplitude + detection:.3%}, giving a {c['confidence']} result.\n",
+        f"{amplitude - detection:.6%} and {amplitude + detection:.6%}. "
+        f"The confidence classification is {c['confidence']}.\n",
         encoding="utf-8",
     )
 
