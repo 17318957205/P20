@@ -1,9 +1,11 @@
 # QXU6028 virtual lab · Group G20
 
 This repository contains the L1–L3 Python analysis, the original regular group
-data, the generated checkpoints and the run records. The `g20-pipeline` tag
-identifies the version used for the regular and blind runs. The blind input ZIP
-is held separately so it can be extracted into a clean directory.
+data, the generated checkpoints and the run records. The `g20-coursework`
+tag identifies the version that regenerates the final report figures and
+numbers. The earlier `g20-pipeline` tag preserves the frozen version recorded
+in the phase checkpoints and the local blind run. The blind input ZIP is held
+separately so it can be extracted into a clean directory.
 
 ## Reproduce a run
 
@@ -12,12 +14,14 @@ install the dependencies once with `python -m pip install -r requirements.txt`.
 Run these commands from the repository root. Each output path must be new.
 
 ```text
-git switch --detach g20-pipeline
-python reproduce.py --data data/regular_G20 --output runs/regular
+git switch --detach g20-coursework
+python reproduce.py --data data/regular_G20 --output runs/coursework
 ```
 
 The pipeline verifies the input hashes and writes `results.json`, the commit
-hash, all five PNGs, three brief notes and the L2 per-index data table. The
+hash, the six report figures (including the L3 singular-value spectrum),
+three brief notes, the L2 per-index data table and `coursework_metrics.json`.
+The latter records the report diagnostics separately from the marked schema. The
 default L3 specification is 0.030, as stated in `README_FIRST.txt` in the
 supplied blind archive.
 
@@ -26,6 +30,7 @@ Then supply that directory in the same command and save its terminal output.
 For example, when the extracted directory is next to this repository, run:
 
 ```text
+git switch --detach g20-pipeline
 python reproduce.py --data ../clean_input/blind_G20 --output runs/blind > run_log.txt 2>&1
 ```
 

@@ -149,6 +149,25 @@ def l3_figures(group, result, output):
     save(fig, output, "L3_method.png")
 
 
+def l3_spectrum_figure(group, result, output):
+    singular_values = result["singular_values"]
+    relative = singular_values / singular_values[0]
+    # Plot exact zeros at the floating-point display floor on the log axis.
+    values = np.maximum(relative, np.finfo(relative.dtype).tiny)
+    fig, (ax, detail) = plt.subplots(
+        1, 2, figsize=(8.8, 3.35), layout="constrained", gridspec_kw={"width_ratios": (2.2, 1)},
+    )
+    indices = np.arange(1, len(values) + 1)
+    ax.semilogy(indices[:-1], values[:-1], "o-", color=BLUE, lw=1.1, ms=2.2)
+    ax.set(title="Nonconstant modes", xlabel="Singular-value index", ylabel=r"$\sigma_i/\sigma_1$")
+    detail.semilogy(indices[-6:], values[-6:], "o-", color=BLUE, lw=1.1, ms=3)
+    detail.scatter(indices[-1], values[-1], marker="s", color=ORANGE, zorder=3, label="Null mode")
+    detail.set(title="Last six modes", xlabel="Singular-value index", xticks=(95, 97, 100))
+    detail.legend(loc="center left", fontsize=8)
+    fig.suptitle(f"{group} L3 | Forward matrix singular values", fontsize=12)
+    save(fig, output, "L3_singular_values.png")
+
+
 def write_notes(group, l1, l2, l3, output):
     a, b, c = (item["results"] for item in (l1, l2, l3))
     checks = ", ".join(f"{ef:g} eV → {value:.4f}" for ef, value in l1["checks"].items())

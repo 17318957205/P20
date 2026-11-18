@@ -14,7 +14,7 @@ import matplotlib
 import numpy as np
 
 from analysis import BOOTSTRAP_COUNT, BOOTSTRAP_SEED, NOISE_COUNT, NOISE_SEED, analyse_l1, analyse_l2, analyse_l3
-from figures import l1_figure, l2_figures, l3_figures, write_l2_table, write_notes
+from figures import l1_figure, l2_figures, l3_figures, l3_spectrum_figure, write_l2_table, write_notes
 
 ROOT = Path(__file__).resolve().parent
 THRESHOLD = 0.030  # L3 specification in the supplied G20 blind package's README_FIRST.txt.
@@ -77,6 +77,53 @@ def validate_results(template, results, expected_trajectory_length):
     return json.dumps(results, indent=2, allow_nan=False) + "\n"
 
 
+def write_coursework_metrics(output, l1, l2, l3):
+    """Write report diagnostics without adding fields to the marked JSON schema."""
+    amplitude = l3["amplitude"]
+    limit = l3["results"]["detection_limit_fraction"]
+    coordinates = [
+        (feature["x_probe_pitch"], feature["y_probe_pitch"])
+        for feature in l3["results"]["features"]
+    ]
+    # Current-related Hall sensitivity 1/(e*n_si) equals mobility_si times sheet resistance.
+    mobility_to_sensitivity = l1["rho_ohm_sq"] * 1e-4
+    trajectory = l2["results"]["EF_trajectory_eV"]
+    metrics = {
+        "L1": {
+            **{key: l1[key] for key in ("ef_op", "temperature", "rho_ohm_sq", "n_band_op", "mobility_band",
+                                       "closed_form_relative_difference", "checks", "crossings", "band_max_rel_diff")},
+            "sensitivity_band_V_per_A_per_T": l1["mobility_band"] * mobility_to_sensitivity,
+            "sensitivity_fermi_V_per_A_per_T": l1["results"]["mobility_corrected_cm2_Vs"] * mobility_to_sensitivity,
+        },
+        "L2": {
+            **{key: l2[key] for key in ("temperature", "cone_rms", "gap_rms", "best_gap_kT",
+                                       "bootstrap_median_kT", "gap_fraction")},
+            "relative_residual_reduction": 1 - l2["gap_rms"] / l2["cone_rms"],
+            "measurement_count": len(l2["indices"]),
+            "mean_hall_brackets": [[int(l2["indices"][left]), int(l2["indices"][right])]
+                                   for left, right in l2["mean_brackets"]],
+            "ef_endpoints_eV": [trajectory[0], trajectory[-1]],
+            "bootstrap_count": BOOTSTRAP_COUNT,
+            "bootstrap_seed": BOOTSTRAP_SEED,
+        },
+        "L3": {
+            **{key: l3[key] for key in ("eta", "threshold", "amplitude", "row_sum", "noise_sd_rms", "numerical_rank")},
+            "singular_values": l3["singular_values"].tolist(),
+            "map_mean": math.fsum(l3["results"]["map"]) / 100,
+            "eta_factors": l3["factors"],
+            "roughness_residual_pairs": l3["sensitivity"].tolist(),
+            "point_spread_fwhm_probe_pitch": [width for _, _, width in l3["spread"]],
+            "extrema_separation_probe_pitch": math.dist(*coordinates),
+            "noise_adjusted_bounds_fraction": [amplitude - limit, amplitude + limit],
+            "noise_simulations": NOISE_COUNT,
+            "noise_seed": NOISE_SEED,
+        },
+    }
+    (output / "coursework_metrics.json").write_text(
+        json.dumps(metrics, indent=2, allow_nan=False) + "\n", encoding="utf-8",
+    )
+
+
 def run(data, output, threshold):
     start = perf_counter()
     commit = pipeline_commit()
@@ -118,8 +165,10 @@ def run(data, output, threshold):
             l1_figure(group, l1, staging)
             l2_figures(group, l2, staging)
             l3_figures(group, l3, staging)
+            l3_spectrum_figure(group, l3, staging)
             write_notes(group, l1, l2, l3, staging)
             write_l2_table(l2, staging)
+            write_coursework_metrics(staging, l1, l2, l3)
         staging.rename(output)
     print(f"Wrote {results_name} and {hash_name} to {output} in {perf_counter() - start:.2f} s")
 

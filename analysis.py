@@ -84,7 +84,10 @@ def analyse_l1(path: Path, params):
         "ef": ef,
         "ratios": ratios,
         "ef_op": ef_op,
+        "temperature": temp,
+        "rho_ohm_sq": rho,
         "n_band_op": n_b_op,
+        "closed_form_relative_difference": abs(n_f_op / closed - 1),
         "mobility_band": 1 / (CHARGE * n_b_op * rho),
         "checks": checks,
         "crossings": {level: bracketed_crossing(level, ef, temp, c) for level in (2, 4)},
@@ -254,7 +257,8 @@ def analyse_l3(matrix_path: Path, scans_path: Path, threshold):
     mean_scan = scans.mean(axis=0)
     gradient = gradient_matrix(size)
     project = np.eye(size**2) - np.ones((size**2, size**2)) / size**2
-    eta = 1e-2 * np.linalg.norm(matrix, 2)**2 / np.linalg.norm(gradient, 2)**2
+    singular_values = np.linalg.svd(matrix, compute_uv=False)
+    eta = 1e-2 * singular_values[0]**2 / np.linalg.norm(gradient, 2)**2
     operator = reconstruction_operator(matrix, gradient, project, eta)
     flat_map = operator @ mean_scan
     flat_map -= flat_map.mean()
@@ -307,6 +311,10 @@ def analyse_l3(matrix_path: Path, scans_path: Path, threshold):
         "spread": spread,
         "factors": factors,
         "sensitivity": np.asarray(sensitivity),
+        "singular_values": singular_values,
+        "numerical_rank": int(np.count_nonzero(
+            singular_values > max(matrix.shape) * np.finfo(matrix.dtype).eps * singular_values[0]
+        )),
         "amplitude": amplitude,
         "row_sum": row_sum,
         "noise_sd_rms": float(np.sqrt(np.mean(scan_sd**2))),
