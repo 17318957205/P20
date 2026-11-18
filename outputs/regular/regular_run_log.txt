@@ -1,0 +1,11 @@
+G20 regular | pipeline commit 686d0010d58429684a9d37c9b245994d816bcdf4
+Python 3.10.20 | NumPy 1.26.4 | Matplotlib 3.7.5
+Data folder /private/tmp/qxu6028.Sc04jR/regular-checkout/data/regular_G20 | input manifest hashes verified
+L1 300 K reference factors [1.0, 2.00494, 2.59885, 5.10437]
+L1 EF=0.157724214 eV | C=4.009602 | mobility=23473.152 cm^2/(V s)
+L2 55 indices, 3 repeats per index | cone RMS=0.018904, best hard-gap RMS=0.015820 (0.5 kBT)
+L2 selected cone, Eg=0 kBT | hard-gap fraction=0.005 (200 draws, seed 6028)
+L3 max row sum=1.665e-16 | 100 finite map values, mean=9.317e-20 | eta=0.0013309925
+L3 resolution=1.444295 pitches | delta95=0.000262% (500 draws, seed 6029)
+L3 peak=3.170986%, threshold=3.000% | clear fail
+Wrote results.json and commit_hash.txt to /private/tmp/qxu6028.Sc04jR/regular-output in 1.66 s

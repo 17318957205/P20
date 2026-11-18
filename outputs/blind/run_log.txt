@@ -1,0 +1,11 @@
+G20 blind | pipeline commit 686d0010d58429684a9d37c9b245994d816bcdf4
+Python 3.10.20 | NumPy 1.26.4 | Matplotlib 3.7.5
+Data folder /private/tmp/qxu6028.Sc04jR/blind-input/blind_G20 | input manifest hashes verified
+L1 300 K reference factors [1.0, 2.00494, 2.59885, 5.10437]
+L1 EF=0.089285594 eV | C=2.355937 | mobility=30264.996 cm^2/(V s)
+L2 54 indices, 3 repeats per index | cone RMS=0.114253, best hard-gap RMS=0.015415 (6.25 kBT)
+L2 selected hard_gap, Eg=6.25 kBT | hard-gap fraction=1.000 (200 draws, seed 6028)
+L3 max row sum=1.665e-16 | 100 finite map values, mean=2.982e-19 | eta=0.0013309925
+L3 resolution=1.444295 pitches | delta95=0.000975% (500 draws, seed 6029)
+L3 peak=4.854610%, threshold=3.000% | clear fail
+Wrote blind_results.json and pipeline_commit.txt to /private/tmp/qxu6028.Sc04jR/blind-output in 0.86 s

@@ -1,0 +1,5 @@
+G20 L2 - Density of states from Hall and sheet-resistance pairs
+
+The cone RMS residual is 0.01890. The best hard-gap candidate (0.5 kBT) gives 0.01582, a reduction of 16.3%. The cone is selected because a hard gap must both reduce the residual by more than 15% and be at least 1 kBT. The reported gap is zero. At this temperature the fitted cone can explain the transport through neutrality.
+
+The mean Hall sign change is bracketed by measurement indices 25 to 26. Across 200 draws (seed 6028), 0.5% select a hard gap. The selected-gap median is 0 kBT and the 16th–84th percentile interval is [0, 0] kBT. The trajectory figure shows the percentile band at each of the 55 measurement indices.
