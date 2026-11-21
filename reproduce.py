@@ -14,7 +14,7 @@ import matplotlib
 import numpy as np
 
 from analysis import BOOTSTRAP_COUNT, BOOTSTRAP_SEED, NOISE_COUNT, NOISE_SEED, analyse_l1, analyse_l2, analyse_l3
-from figures import l1_figure, l2_figures, l3_figures, l3_spectrum_figure, write_l2_table, write_notes
+from figures import l1_figures, l2_figures, l3_figures, l3_spectrum_figure, write_l2_table, write_notes
 
 ROOT = Path(__file__).resolve().parent
 THRESHOLD = 0.030  # L3 specification in the supplied G20 blind package's README_FIRST.txt.
@@ -95,6 +95,9 @@ def write_coursework_metrics(output, l1, l2, l3):
             "sweep_ef_eV": l1["ef"].tolist(),
             "sweep_band_density_cm2": l1["n_band_sweep_cm2"].tolist(),
             "sweep_fermi_density_cm2": l1["n_fermi_sweep_cm2"].tolist(),
+            "sweep_sheet_resistance_ohm_sq": l1["rho_sweep_ohm_sq"].tolist(),
+            "sweep_band_mobility_cm2_Vs": l1["mobility_band_sweep_cm2_Vs"].tolist(),
+            "sweep_fermi_mobility_cm2_Vs": l1["mobility_fermi_sweep_cm2_Vs"].tolist(),
             "sensitivity_band_V_per_A_per_T": l1["mobility_band"] * mobility_to_sensitivity,
             "sensitivity_fermi_V_per_A_per_T": l1["results"]["mobility_corrected_cm2_Vs"] * mobility_to_sensitivity,
         },
@@ -165,7 +168,7 @@ def run(data, output, threshold):
         (staging / results_name).write_text(payload, encoding="utf-8")
         (staging / hash_name).write_text(commit + "\n", encoding="utf-8")
         if dataset == "regular":
-            l1_figure(group, l1, staging)
+            l1_figures(group, l1, staging)
             l2_figures(group, l2, staging)
             l3_figures(group, l3, staging)
             l3_spectrum_figure(group, l3, staging)

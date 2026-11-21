@@ -34,17 +34,24 @@ def save(fig, output, filename):
     plt.close(fig)
 
 
-def l1_figure(group, result, output):
-    fig, (counts, ax) = plt.subplots(1, 2, figsize=(11.4, 4.6), layout="constrained", sharex=True)
-    sweep = result["ef"]
-    counts.plot(sweep, result["n_band_sweep_cm2"] / 1e12, "o-", color=BLUE, ms=3.6, label="Band-edge count")
-    counts.plot(sweep, result["n_fermi_sweep_cm2"] / 1e12, "s-", color=GREEN, ms=3.4, label="Fermi-referenced count")
-    counts.axvline(result["ef_op"], color=ORANGE, linewidth=0.9, linestyle=":")
-    counts.set(title="Sheet carrier density", xlabel=r"Fermi level $E_F$ (eV)",
-               ylabel=r"Sheet density ($10^{12}$ cm$^{-2}$)")
-    counts.legend(loc="upper left")
+def l1_sweep_comparison(result, curves, operating_values, scale, title, ylabel):
+    fig, ax = plt.subplots(figsize=(8.4, 3.65), layout="constrained")
+    for values, label, marker, colour in zip(
+        curves, ("Band-edge model", "Fermi-referenced model"), ("o", "s"), (BLUE, GREEN)
+    ):
+        ax.plot(result["ef"], values / scale, marker=marker, color=colour, ms=3.6, label=label)
+    ef_op = result["ef_op"]
+    ax.axvline(ef_op, color=ORANGE, linewidth=0.9, linestyle=":")
+    ax.scatter([ef_op] * 2, np.asarray(operating_values) / scale, facecolor="none",
+               edgecolor=ORANGE, linewidth=1.4, s=68, zorder=4, label="Exact operating point")
+    ax.set(title=title, xlabel=r"Fermi level $E_F$ (eV)", ylabel=ylabel)
+    ax.legend()
+    return fig
 
-    ax.plot(sweep, result["ratios"], "o-", color=BLUE, ms=3.6, label="Sweep ratio")
+
+def l1_figures(group, result, output):
+    fig, ax = plt.subplots(figsize=(8.4, 4.15), layout="constrained")
+    ax.plot(result["ef"], result["ratios"], "o-", color=BLUE, ms=3.6, label="Sweep ratio")
     for level, energy in result["crossings"].items():
         ax.axhline(level, color="#757575", linewidth=0.8, linestyle="--", zorder=1)
         ax.scatter(energy, level, marker="s", s=28, color=GREEN, zorder=3)
@@ -55,10 +62,26 @@ def l1_figure(group, result, output):
                linewidth=1.5, zorder=4,
                label="Exact operating point")
     ax.set(xlabel=r"Fermi level $E_F$ (eV)", ylabel=r"Correction factor $C=n_{\mathrm{band}}/n_F$",
-           title="Carrier-count correction")
+           title=f"{group} L1 | Carrier-count correction")
     ax.legend(loc="upper left")
-    fig.suptitle(f"{group} L1 | Band-edge and Fermi-referenced carrier counts", fontsize=12)
     save(fig, output, "L1_correction.png")
+
+    marked = result["results"]
+    density = l1_sweep_comparison(
+        result, (result["n_band_sweep_cm2"], result["n_fermi_sweep_cm2"]),
+        (result["n_band_op"], marked["n_fermi_op_cm2"]), 1e12,
+        f"{group} L1 | Carrier density versus Fermi level",
+        r"Sheet carrier density ($10^{12}$ cm$^{-2}$)",
+    )
+    save(density, output, "L1_carrier_density_vs_fermi_level.png")
+
+    mobility = l1_sweep_comparison(
+        result, (result["mobility_band_sweep_cm2_Vs"], result["mobility_fermi_sweep_cm2_Vs"]),
+        (result["mobility_band"], marked["mobility_corrected_cm2_Vs"]), 1e4,
+        f"{group} L1 | Extracted mobility versus Fermi level",
+        r"Inferred mobility ($10^4$ cm$^2$ V$^{-1}$ s$^{-1}$)",
+    )
+    save(mobility, output, "L1_mobility_vs_fermi_level.png")
 
 
 def l2_figures(group, result, output):

@@ -1,9 +1,9 @@
 # QXU6028 virtual lab · Group G20
 
 This repository contains the L1–L3 Python analysis, the original regular group
-data, the generated checkpoints and the run records. The `g20-coursework-v2`
+data, the generated checkpoints and the run records. The `g20-coursework-v3`
 tag identifies the version that regenerates the final report figures and
-numbers. The `g20-coursework` tag preserves the first report's run. The
+numbers. The `g20-coursework` and `g20-coursework-v2` tags preserve earlier report runs. The
 `g20-pipeline` tag preserves the frozen version recorded
 in the phase checkpoints and the local blind run. The blind input ZIP is held
 separately so it can be extracted into a clean directory.
@@ -15,12 +15,12 @@ install the dependencies once with `python -m pip install -r requirements.txt`.
 Run these commands from the repository root. Each output path must be new.
 
 ```text
-git switch --detach g20-coursework-v2
+git switch --detach g20-coursework-v3
 python reproduce.py --data data/regular_G20 --output runs/coursework
 ```
 
 The pipeline verifies the input hashes and writes `results.json`, the commit
-hash, the six report figures (including the L1 density sweep, the two L2
+hash, the eight report figures (including the separate L1 density and mobility sweeps, the two L2
 channel overlays and the L3 singular-value spectrum),
 three brief notes, the L2 per-index data table and `coursework_metrics.json`.
 The latter records the report diagnostics separately from the marked schema. The

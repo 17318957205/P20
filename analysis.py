@@ -50,11 +50,14 @@ def analyse_l1(path: Path, params):
     data = np.genfromtxt(path, delimiter=",", names=True, ndmin=1)
     ef = data["EF_eV"]
     supplied = data["n_band_cm2"]
+    sweep_rho = data["rho_ohm_sq"]
     c, temp, ef_op, rho = (float(params[key]) for key in ("c", "T", "EF_op_eV", "rho_ohm_sq"))
     if not (c > 0 and temp > 0 and 0 <= ef_op < EMAX and rho > 0):
         raise ValueError("Invalid L1 operating parameters.")
     if not (len(ef) >= 2 and np.all(np.diff(ef) > 0) and np.isfinite(supplied).all()):
         raise ValueError("Expected a finite, increasing L1 sweep.")
+    if not (np.isfinite(sweep_rho).all() and np.all(sweep_rho > 0)):
+        raise ValueError("L1 sweep sheet resistance must be finite and positive.")
 
     references = {0.0: 1.00, 0.073: 2.00, 0.100: 2.60, 0.200: 5.10}
     checks = {ref: correction_at(ref, 300.0, c) for ref in references}
@@ -85,6 +88,9 @@ def analyse_l1(path: Path, params):
         "ratios": ratios,
         "n_band_sweep_cm2": supplied,
         "n_fermi_sweep_cm2": n_fermi,
+        "rho_sweep_ohm_sq": sweep_rho,
+        "mobility_band_sweep_cm2_Vs": 1 / (CHARGE * supplied * sweep_rho),
+        "mobility_fermi_sweep_cm2_Vs": 1 / (CHARGE * n_fermi * sweep_rho),
         "ef_op": ef_op,
         "temperature": temp,
         "dos_scale_c": c,
