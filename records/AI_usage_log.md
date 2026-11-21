@@ -9,3 +9,4 @@ Tool used: OpenAI Codex.
 3. **Check the English report for grammar.** Codex checked the report for grammar, punctuation and consistency of terminology.
 
 **Scope of contribution.** Codex also drafted the Python analysis pipeline, the English report and the critical self-assessment.
+For the final L1 revision, Codex generated the separate density and mobility figures, independently checked all 12 sweep points and added the interpretation to the report.
